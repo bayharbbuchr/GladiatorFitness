@@ -1,0 +1,31 @@
+{
+  "name": "gladiator-backend",
+  "version": "1.0.0",
+  "description": "Gladiator app backend API",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.11.3",
+    "pg-pool": "^3.6.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-validator": "^7.0.1",
+    "multer": "^1.4.5-lts.1",
+    "cloudinary": "^1.41.0",
+    "uuid": "^9.0.1",
+    "dotenv": "^16.3.1",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+} 
