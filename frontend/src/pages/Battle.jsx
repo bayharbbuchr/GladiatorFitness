@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Swords, Upload, Users } from 'lucide-react'
 import { battlesAPI } from '../lib/api'
 import { Button } from '../components/ui/button'
@@ -7,6 +8,7 @@ import { Badge } from '../components/ui/badge'
 import { formatDuration } from '../lib/utils'
 
 export default function Battle() {
+  const navigate = useNavigate()
   const [activeBattles, setActiveBattles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [battleState, setBattleState] = useState('ready') // ready, waiting, active
@@ -16,7 +18,13 @@ export default function Battle() {
     try {
       const response = await battlesAPI.battleNow()
       if (response.data.success) {
-        setBattleState(response.data.battle ? 'active' : 'waiting')
+        if (response.data.battle) {
+          // Battle created successfully, navigate to arena
+          navigate(`/battle/${response.data.battle.id}`)
+        } else {
+          // Waiting for matchmaking
+          setBattleState('waiting')
+        }
         loadActiveBattles()
       }
     } catch (error) {
@@ -42,6 +50,35 @@ export default function Battle() {
 
   return (
     <div className="space-y-6">
+      {/* Test Battle Access Section */}
+      <Card className="border-red-500 bg-red-50/10">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-red-500">
+            <Swords className="h-6 w-6" />
+            <span>🧪 TEST BATTLE ACCESS</span>
+          </CardTitle>
+          <CardDescription className="text-red-400">
+            Direct access to test the Battle Arena page
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-300">
+              Click the button below to access a test battle arena page:
+            </p>
+            <Button 
+              onClick={() => navigate('/battle/test-battle-123')}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              🎯 Access Test Battle Arena
+            </Button>
+            <p className="text-xs text-gray-400">
+              This will take you to: <code>/battle/test-battle-123</code>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Battle Now Section */}
       <Card>
         <CardHeader>
@@ -120,14 +157,27 @@ export default function Battle() {
                     
                     <div className="ml-6">
                       {battle.my_video_url ? (
-                        <Badge variant="default">Video Submitted</Badge>
+                        <div className="space-y-2">
+                          <Badge variant="default">Video Submitted</Badge>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => navigate(`/battle/${battle.id}`)}
+                          >
+                            <Swords className="mr-2 h-4 w-4" />
+                            View Arena
+                          </Button>
+                        </div>
                       ) : (
                         <div className="space-y-2">
                           <Badge variant="outline">Upload Pending</Badge>
                           <div>
-                            <Button size="sm">
+                            <Button 
+                              size="sm"
+                              onClick={() => navigate(`/battle/${battle.id}`)}
+                            >
                               <Upload className="mr-2 h-4 w-4" />
-                              Upload Video
+                              Enter Arena
                             </Button>
                           </div>
                         </div>

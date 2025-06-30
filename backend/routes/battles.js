@@ -15,24 +15,44 @@ router.post('/battle-now', async (req, res) => {
 
     // Check if user is already in an active battle
     const activeBattle = await client.query(`
-      SELECT id FROM battles 
-      WHERE (user1_id = $1 OR user2_id = $1) 
-      AND status IN ('pending', 'active')
+      SELECT b.id, b.challenge_id, b.status, c.title, c.description, c.duration_sec,
+             CASE WHEN b.user1_id = $1 THEN u2.display_name ELSE u1.display_name END as opponent_name
+      FROM battles b
+      JOIN challenges c ON b.challenge_id = c.id
+      JOIN users u1 ON b.user1_id = u1.id
+      JOIN users u2 ON b.user2_id = u2.id
+      WHERE (b.user1_id = $1 OR b.user2_id = $1) 
+      AND b.status IN ('pending', 'active')
     `, [userId]);
 
     if (activeBattle.rows.length > 0) {
-      return res.status(400).json({ message: 'You are already in an active battle' });
+      await client.query('COMMIT');
+      return res.json({
+        success: true,
+        message: 'You have an active battle',
+        battle: activeBattle.rows[0]
+      });
     }
 
     // Check if user is already in a pending voting group
     const activeGroup = await client.query(`
-      SELECT group_id FROM voting_group_members 
-      WHERE user_id = $1 
-      AND group_id IN (SELECT id FROM voting_groups WHERE status = 'pending')
+      SELECT vg.group_id, COUNT(vgm.user_id) as member_count
+      FROM voting_group_members vg
+      LEFT JOIN voting_group_members vgm ON vg.group_id = vgm.group_id
+      WHERE vg.user_id = $1 
+      AND vg.group_id IN (SELECT id FROM voting_groups WHERE status = 'pending')
+      GROUP BY vg.group_id
     `, [userId]);
 
     if (activeGroup.rows.length > 0) {
-      return res.status(400).json({ message: 'You are already in a pending voting group' });
+      await client.query('COMMIT');
+      const waitingFor = 10 - activeGroup.rows[0].member_count;
+      return res.json({
+        success: true,
+        message: 'You are in the matchmaking queue',
+        battle: null,
+        waiting_for_players: waitingFor
+      });
     }
 
     // Find or create a voting group with available slots
@@ -174,7 +194,7 @@ router.post('/battle-now', async (req, res) => {
   }
 });
 
-// Get user's active battles
+// Get user's active battles - MUST come before /:battleId route
 router.get('/active', async (req, res) => {
   try {
     const userId = req.user.id;
@@ -201,6 +221,84 @@ router.get('/active', async (req, res) => {
   } catch (error) {
     console.error('Get active battles error:', error);
     res.status(500).json({ message: 'Server error fetching battles' });
+  }
+});
+
+// Get battle details by ID
+router.get('/:battleId', async (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const userId = req.user.id;
+
+    // Get battle details with challenge and opponent info
+    const battleQuery = await pool.query(`
+      SELECT b.id, b.challenge_id, b.status, b.started_at, b.user1_video_url, b.user2_video_url,
+             c.title as challenge_title, c.description, c.duration_sec, c.difficulty,
+             u1.id as user1_id, u1.display_name as user1_name, u1.tier as user1_tier, 
+             u1.level as user1_level, u1.points as user1_points, u1.wins as user1_wins, u1.losses as user1_losses,
+             u2.id as user2_id, u2.display_name as user2_name, u2.tier as user2_tier,
+             u2.level as user2_level, u2.points as user2_points, u2.wins as user2_wins, u2.losses as user2_losses
+      FROM battles b
+      JOIN challenges c ON b.challenge_id = c.id
+      JOIN users u1 ON b.user1_id = u1.id
+      JOIN users u2 ON b.user2_id = u2.id
+      WHERE b.id = $1 AND (b.user1_id = $2 OR b.user2_id = $2)
+    `, [battleId, userId]);
+
+    if (battleQuery.rows.length === 0) {
+      return res.status(404).json({ message: 'Battle not found or you do not have access' });
+    }
+
+    const battle = battleQuery.rows[0];
+    
+    // Determine which user is the current user and which is the opponent
+    const isUser1 = battle.user1_id === userId;
+    const currentUser = {
+      id: isUser1 ? battle.user1_id : battle.user2_id,
+      display_name: isUser1 ? battle.user1_name : battle.user2_name,
+      tier: isUser1 ? battle.user1_tier : battle.user2_tier,
+      level: isUser1 ? battle.user1_level : battle.user2_level,
+      points: isUser1 ? battle.user1_points : battle.user2_points,
+      wins: isUser1 ? battle.user1_wins : battle.user2_wins,
+      losses: isUser1 ? battle.user1_losses : battle.user2_losses
+    };
+
+    const opponent = {
+      id: isUser1 ? battle.user2_id : battle.user1_id,
+      display_name: isUser1 ? battle.user2_name : battle.user1_name,
+      tier: isUser1 ? battle.user2_tier : battle.user1_tier,
+      level: isUser1 ? battle.user2_level : battle.user1_level,
+      points: isUser1 ? battle.user2_points : battle.user1_points,
+      wins: isUser1 ? battle.user2_wins : battle.user1_wins,
+      losses: isUser1 ? battle.user2_losses : battle.user1_losses
+    };
+
+    const response = {
+      battle: {
+        id: battle.id,
+        challenge_id: battle.challenge_id,
+        status: battle.status,
+        started_at: battle.started_at,
+        user1_video_url: battle.user1_video_url,
+        user2_video_url: battle.user2_video_url,
+        my_video_url: isUser1 ? battle.user1_video_url : battle.user2_video_url,
+        opponent_video_url: isUser1 ? battle.user2_video_url : battle.user1_video_url
+      },
+      challenge: {
+        id: battle.challenge_id,
+        title: battle.challenge_title,
+        description: battle.description,
+        duration_sec: battle.duration_sec,
+        difficulty: battle.difficulty
+      },
+      currentUser,
+      opponent
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching battle details:', error);
+    res.status(500).json({ message: 'Server error fetching battle details' });
   }
 });
 
@@ -270,54 +368,6 @@ router.post('/:battleId/submit-video', async (req, res) => {
   } catch (error) {
     console.error('Submit video error:', error);
     res.status(500).json({ message: 'Server error submitting video' });
-  }
-});
-
-// Get battle details
-router.get('/:battleId', async (req, res) => {
-  try {
-    const { battleId } = req.params;
-    const userId = req.user.id;
-
-    const battle = await pool.query(`
-      SELECT b.id, b.challenge_id, b.status, b.started_at, b.completed_at,
-             b.user1_video_url, b.user2_video_url, b.winner_id,
-             c.title as challenge_title, c.description, c.duration_sec,
-             u1.display_name as user1_name, u1.avatar_url as user1_avatar,
-             u2.display_name as user2_name, u2.avatar_url as user2_avatar
-      FROM battles b
-      JOIN challenges c ON b.challenge_id = c.id
-      JOIN users u1 ON b.user1_id = u1.id
-      JOIN users u2 ON b.user2_id = u2.id
-      WHERE b.id = $1
-    `, [battleId]);
-
-    if (battle.rows.length === 0) {
-      return res.status(404).json({ message: 'Battle not found' });
-    }
-
-    // Check if user has access to this battle (competitor or voter)
-    const access = await pool.query(`
-      SELECT role FROM voting_group_members vgm
-      JOIN battles b ON (vgm.battle_id = b.id OR 
-                         (vgm.group_id IN (SELECT group_id FROM voting_group_members WHERE battle_id = $1)))
-      WHERE vgm.user_id = $2 AND (b.id = $1 OR vgm.battle_id = $1)
-      LIMIT 1
-    `, [battleId, userId]);
-
-    if (access.rows.length === 0) {
-      return res.status(403).json({ message: 'Access denied to this battle' });
-    }
-
-    res.json({
-      success: true,
-      battle: battle.rows[0],
-      user_role: access.rows[0].role
-    });
-
-  } catch (error) {
-    console.error('Get battle details error:', error);
-    res.status(500).json({ message: 'Server error fetching battle details' });
   }
 });
 

@@ -6,7 +6,10 @@ import {
   User, 
   Vote, 
   Home,
-  LogOut
+  LogOut,
+  Skull,
+  Flame,
+  Shield
 } from 'lucide-react'
 import useAuthStore from '../store/useAuthStore'
 import { Button } from './ui/button'
@@ -15,11 +18,11 @@ import { Badge } from './ui/badge'
 import { getTierColor } from '../lib/utils'
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Arena', href: '/dashboard', icon: Home },
   { name: 'Battle', href: '/battle', icon: Swords },
-  { name: 'Voting', href: '/voting', icon: Vote },
-  { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
-  { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Judgement', href: '/voting', icon: Vote },
+  { name: 'Hall of Fame', href: '/leaderboard', icon: Trophy },
+  { name: 'Warrior Profile', href: '/profile', icon: User },
 ]
 
 export default function Layout() {
@@ -31,42 +34,53 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="flex flex-col w-64 bg-white shadow-lg">
-        {/* Logo */}
-        <div className="flex items-center justify-center h-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600">
-          <div className="flex items-center space-x-2">
-            <Swords className="h-8 w-8 text-white" />
-            <span className="text-xl font-bold text-white">Gladiator</span>
+    <div className="flex h-screen bg-black">
+      {/* Sidebar - Arena Command Center */}
+      <div className="flex flex-col w-64 arena-sidebar">
+        {/* Logo - GLADIATOR ARENA OF DEATH */}
+        <div className="flex items-center justify-center h-20 px-4 arena-header">
+          <div className="flex flex-col items-center space-y-1">
+            <div className="flex items-center space-x-2">
+              <Skull className="h-8 w-8 text-white" />
+              <span className="text-xl font-bold text-white arena-title">GLADIATOR</span>
+            </div>
+            <span className="text-xs text-red-300 font-semibold tracking-widest">ARENA OF DEATH</span>
           </div>
         </div>
 
-        {/* User info */}
-        <div className="flex items-center space-x-3 p-4 border-b">
-          <Avatar className="h-10 w-10">
+        {/* Warrior Info */}
+        <div className="flex items-center space-x-3 p-4 border-b border-red-900/50 bg-black/30">
+          <Avatar className="h-12 w-12 border-2 border-red-700">
             <AvatarImage src={user?.avatar_url} />
-            <AvatarFallback>
-              {user?.display_name?.charAt(0)?.toUpperCase() || 'U'}
+            <AvatarFallback className="bg-red-900 text-red-100 font-bold">
+              {user?.display_name?.charAt(0)?.toUpperCase() || 'W'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-bold text-red-300 truncate uppercase tracking-wide">
               {user?.display_name}
             </p>
-            <div className="flex items-center space-x-1">
-              <Badge className={`text-xs ${getTierColor(user?.tier)}`}>
+            <div className="flex items-center space-x-2 mt-1">
+              <Badge className={`text-xs font-bold ${getTierColor(user?.tier)}`}>
                 {user?.tier} {user?.level}
               </Badge>
-              <span className="text-xs text-gray-500">
-                {user?.points} pts
+            </div>
+            <div className="flex items-center space-x-4 mt-1">
+              <span className="text-xs text-red-400 font-semibold">
+                {user?.points} BLOOD POINTS
+              </span>
+            </div>
+            <div className="flex items-center space-x-1 mt-1">
+              <Flame className="h-3 w-3 text-orange-500" />
+              <span className="text-xs text-gray-400">
+                {user?.wins}W - {user?.losses}L
               </span>
             </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-1">
+        {/* Navigation - Arena Sections */}
+        <nav className="flex-1 px-2 py-6 space-y-2">
           {navigation.map((item) => {
             const isActive = location.pathname === item.href
             const Icon = item.icon
@@ -75,54 +89,96 @@ export default function Layout() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`flex items-center px-3 py-3 text-sm font-bold rounded-md transition-all duration-300 uppercase tracking-wide ${
                   isActive
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'arena-nav-item active text-red-400 bg-red-900/20 border-l-4 border-red-500'
+                    : 'arena-nav-item text-gray-400 hover:text-red-400 hover:bg-red-900/10'
                 }`}
               >
-                <Icon className="mr-3 h-4 w-4" />
+                <Icon className="mr-3 h-5 w-5" />
                 {item.name}
               </Link>
             )
           })}
         </nav>
 
-        {/* Logout button */}
-        <div className="p-4 border-t">
+        {/* Season Info */}
+        <div className="p-4 border-t border-red-900/50 bg-black/30">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <Shield className="h-4 w-4 text-red-500" />
+              <span className="text-xs font-bold text-red-400 uppercase tracking-wider">
+                Season of Blood
+              </span>
+            </div>
+            <div className="arena-progress h-2 rounded-full mb-2">
+              <div className="arena-progress-fill h-full rounded-full" style={{width: '73%'}}></div>
+            </div>
+            <span className="text-xs text-gray-500">73% Complete</span>
+          </div>
+        </div>
+
+        {/* Exit Arena button */}
+        <div className="p-4 border-t border-red-900/50">
           <Button
             variant="ghost"
-            className="w-full justify-start"
+            className="w-full justify-start text-gray-400 hover:text-red-400 hover:bg-red-900/10 font-bold uppercase tracking-wide"
             onClick={handleLogout}
           >
             <LogOut className="mr-3 h-4 w-4" />
-            Logout
+            Exit Arena
           </Button>
         </div>
       </div>
 
-      {/* Main content */}
+      {/* Main content - Battle Ground */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top header */}
-        <header className="bg-white shadow-sm border-b">
+        {/* Top header - Arena Status */}
+        <header className="arena-header">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {navigation.find(item => item.href === location.pathname)?.name || 'Gladiator'}
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-white uppercase tracking-wide">
+                  {navigation.find(item => item.href === location.pathname)?.name || 'GLADIATOR ARENA'}
+                </h1>
+                <span className="text-red-300 text-sm font-semibold tracking-widest">
+                  WHERE LEGENDS ARE FORGED IN BLOOD
+                </span>
+              </div>
               
-              <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-500">
-                  {user?.wins}W - {user?.losses}L
+              <div className="flex items-center space-x-6">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {user?.wins || 0}
+                  </div>
+                  <div className="text-xs text-red-300 font-bold uppercase tracking-wider">
+                    Victories
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {user?.losses || 0}
+                  </div>
+                  <div className="text-xs text-red-300 font-bold uppercase tracking-wider">
+                    Defeats
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-yellow-400">
+                    #{user?.rank || '---'}
+                  </div>
+                  <div className="text-xs text-red-300 font-bold uppercase tracking-wider">
+                    Arena Rank
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="py-6">
+        {/* Page content - The Arena Floor */}
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-black/90 to-red-950/20">
+          <div className="py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
               <Outlet />
             </div>

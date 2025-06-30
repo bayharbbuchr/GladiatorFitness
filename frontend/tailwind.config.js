@@ -51,6 +51,11 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom Gladiator Arena colors
+        'arena-black': '#0a0a0a',
+        'blood-red': '#dc2626',
+        'dark-red': '#991b1b',
+        'gladiator-gold': '#fbbf24',
       },
       borderRadius: {
         lg: "var(--radius)",

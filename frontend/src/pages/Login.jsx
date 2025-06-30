@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Swords } from 'lucide-react'
+import { Skull, Swords, Flame } from 'lucide-react'
 import useAuthStore from '../store/useAuthStore'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -33,87 +33,121 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Logo */}
-        <div className="text-center">
-          <div className="flex justify-center items-center space-x-2 mb-4">
-            <div className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full">
-              <Swords className="h-8 w-8 text-white" />
-            </div>
+    <div className="max-w-md w-full space-y-8">
+      {/* Arena Logo */}
+      <div className="text-center">
+        <div className="flex justify-center items-center space-x-3 mb-6">
+          <div className="p-4 arena-header rounded-full">
+            <Skull className="h-10 w-10 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome to Gladiator</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to your account to start battling
-          </p>
         </div>
+        <h1 className="text-4xl font-bold arena-title mb-2">GLADIATOR</h1>
+        <h2 className="text-lg font-bold text-red-300 uppercase tracking-widest mb-4">ARENA OF DEATH</h2>
+        <p className="text-red-200 font-semibold">
+          Enter the Arena. Prove your worth. Spill blood for glory.
+        </p>
+      </div>
 
-        {/* Login Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign In</CardTitle>
-            <CardDescription>
-              Enter your credentials to access your account
-            </CardDescription>
-          </CardHeader>
-          
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              {error && (
-                <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-300 rounded-md">
-                  {error}
+      {/* Login Form - Arena Entry */}
+      <Card className="arena-card blood-border">
+        <CardHeader className="text-center">
+          <CardTitle className="text-red-300 text-xl font-bold uppercase tracking-wider">
+            ENTER THE ARENA
+          </CardTitle>
+          <CardDescription className="text-gray-400 font-semibold">
+            Only warriors with proven credentials may enter
+          </CardDescription>
+        </CardHeader>
+        
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-6">
+            {error && (
+              <div className="p-4 text-sm text-red-200 bg-red-900/50 border border-red-700 rounded-md blood-glow">
+                <div className="flex items-center space-x-2">
+                  <Flame className="h-4 w-4" />
+                  <span className="font-bold">ARENA ENTRY DENIED:</span>
                 </div>
-              )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
+                <div className="mt-1">{error}</div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
-            </CardContent>
+            )}
             
-            <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-                variant="gladiator"
-              >
-                {isLoading ? 'Signing in...' : 'Sign In'}
-              </Button>
-              
-              <div className="text-center text-sm">
-                <span className="text-gray-600">Don't have an account? </span>
+            <div className="space-y-3">
+              <Label htmlFor="email" className="text-red-300 font-bold uppercase tracking-wide">
+                Warrior Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="Enter your warrior email"
+                value={formData.email}
+                onChange={handleChange}
+                className="bg-black/50 border-red-900/50 text-white placeholder-gray-500 focus:border-red-500 focus:ring-red-500"
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <Label htmlFor="password" className="text-red-300 font-bold uppercase tracking-wide">
+                Blood Oath
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Enter your blood oath"
+                value={formData.password}
+                onChange={handleChange}
+                className="bg-black/50 border-red-900/50 text-white placeholder-gray-500 focus:border-red-500 focus:ring-red-500"
+              />
+            </div>
+          </CardContent>
+          
+          <CardFooter className="flex flex-col space-y-6">
+            <Button 
+              type="submit" 
+              className="w-full battle-button h-12 text-lg" 
+              disabled={isLoading}
+            >
+              <Swords className="mr-3 h-5 w-5" />
+              {isLoading ? 'ENTERING ARENA...' : 'ENTER THE ARENA'}
+            </Button>
+            
+            <div className="text-center">
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <div className="h-px bg-red-900/50 flex-1"></div>
+                <Skull className="h-4 w-4 text-red-500" />
+                <div className="h-px bg-red-900/50 flex-1"></div>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-400">New to the Arena? </span>
                 <Link 
                   to="/register" 
-                  className="font-medium text-blue-600 hover:text-blue-500"
+                  className="font-bold text-red-400 hover:text-red-300 uppercase tracking-wider transition-colors"
                 >
-                  Sign up here
+                  Forge Your Legend
                 </Link>
               </div>
-            </CardFooter>
-          </form>
-        </Card>
+            </div>
+          </CardFooter>
+        </form>
+      </Card>
+
+      {/* Arena Warning */}
+      <div className="text-center">
+        <div className="arena-card p-4 border border-red-900/30">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <Flame className="h-4 w-4 text-orange-500" />
+            <span className="text-xs font-bold text-red-400 uppercase tracking-widest">
+              Arena Warning
+            </span>
+            <Flame className="h-4 w-4 text-orange-500" />
+          </div>
+          <p className="text-xs text-gray-500 font-semibold">
+            Only the strongest survive. Enter at your own risk.
+          </p>
+        </div>
       </div>
     </div>
   )

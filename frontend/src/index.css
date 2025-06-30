@@ -4,85 +4,235 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    /* GLADIATOR ARENA THEME - DARK & BLOODY */
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 84% 30%;
+    --input: 0 0% 12%;
+    --ring: 0 84% 60%;
     --radius: 0.5rem;
+    
+    /* Custom Gladiator Colors */
+    --blood-red: 0 84% 60%;
+    --dark-red: 0 84% 30%;
+    --arena-black: 0 0% 5%;
+    --gladiator-gold: 45 100% 50%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 84% 30%;
+    --input: 0 0% 12%;
+    --ring: 0 84% 60%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
+    color: hsl(var(--foreground));
+    font-family: 'Inter', sans-serif;
   }
 }
 
-/* Custom Gladiator theme additions */
-.gladiator-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+
+@layer components {
+  /* Arena Header Gradient */
+  .arena-header {
+    background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 50%, #1f2937 100%);
+    border-bottom: 2px solid #dc2626;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  }
+
+  /* Gladiator Cards */
+  .arena-card {
+    background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+    border: 2px solid #991b1b;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .arena-card:hover {
+    border-color: #dc2626;
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Battle Button */
+  .battle-button {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    border: 2px solid #7f1d1d;
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  }
+
+  .battle-button:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
+    transform: translateY(-1px);
+  }
+
+  /* Voting Button */
+  .voting-button {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    border: 2px solid #4b5563;
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+  }
+
+  .voting-button:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    border-color: #dc2626;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+  }
+
+  /* Tier Styles - Gladiator themed */
+  .tier-bronze {
+    @apply text-orange-400 bg-orange-900/20 border-orange-700;
+  }
+
+  .tier-silver {
+    @apply text-gray-300 bg-gray-800/20 border-gray-600;
+  }
+
+  .tier-gold {
+    @apply text-yellow-400 bg-yellow-900/20 border-yellow-700;
+  }
+
+  .tier-platinum {
+    @apply text-blue-400 bg-blue-900/20 border-blue-700;
+  }
+
+  .tier-diamond {
+    @apply text-cyan-400 bg-cyan-900/20 border-cyan-700;
+  }
+
+  .tier-gladiator {
+    @apply text-red-400 bg-red-900/20 border-red-700;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(127, 29, 29, 0.2) 100%);
+    border-color: #dc2626;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+  }
+
+  /* Glowing Text Effects */
+  .arena-title {
+    color: #dc2626;
+    text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .gladiator-text {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #dc2626 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  /* Blood effects */
+  .blood-glow {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+  }
+
+  .blood-border {
+    border: 2px solid #dc2626;
+    box-shadow: inset 0 0 10px rgba(220, 38, 38, 0.2);
+  }
+
+  /* Arena Progress Bar */
+  .arena-progress {
+    background: linear-gradient(90deg, #111111 0%, #1a1a1a 100%);
+    border: 1px solid #991b1b;
+  }
+
+  .arena-progress-fill {
+    background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+  }
+
+  /* Sidebar Styling */
+  .arena-sidebar {
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 100%);
+    border-right: 2px solid #991b1b;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .arena-nav-item {
+    color: #9ca3af;
+    transition: all 0.3s ease;
+  }
+
+  .arena-nav-item:hover {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.1);
+    border-left: 3px solid #dc2626;
+  }
+
+  .arena-nav-item.active {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.2);
+    border-left: 3px solid #dc2626;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+  }
 }
 
-.tier-bronze {
-  @apply text-amber-600 bg-amber-50 border-amber-200;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.tier-silver {
-  @apply text-gray-600 bg-gray-50 border-gray-200;
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
 }
 
-.tier-gold {
-  @apply text-yellow-600 bg-yellow-50 border-yellow-200;
+::-webkit-scrollbar-thumb {
+  background: #991b1b;
+  border-radius: 4px;
 }
 
-.tier-platinum {
-  @apply text-blue-600 bg-blue-50 border-blue-200;
-}
-
-.tier-diamond {
-  @apply text-cyan-600 bg-cyan-50 border-cyan-200;
-}
-
-.tier-gladiator {
-  @apply text-purple-600 bg-purple-50 border-purple-200;
+::-webkit-scrollbar-thumb:hover {
+  background: #dc2626;
 } 
